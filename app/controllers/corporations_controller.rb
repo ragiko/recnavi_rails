@@ -9,6 +9,13 @@ class CorporationsController < ApplicationController
   end
 
   def create
+    
+    company = Recnavi::Company.new(corp_params[:recnavi_id])
+    # 
+    if company.top_doc.nil?
+      redirect_to :new, notice: '企業が存在しません'
+    end
+    # company.top_doc.nil?
     @corp = current_user.resister_corporations.build(corp_params)
     if @corp.save
       redirect_to @corp, notice: '作成しました'
