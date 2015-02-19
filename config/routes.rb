@@ -5,7 +5,9 @@ Rails.application.routes.draw do
 
   get 'users/new'
 
-  resources :corporations
+  resources :corporations do
+    resources :resisters
+  end
 
   devise_for :users
   root to: 'welcome#index'

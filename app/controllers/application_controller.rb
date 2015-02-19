@@ -8,4 +8,12 @@ class ApplicationController < ActionController::Base
   def sign_in_required
     redirect_to new_user_session_url unless user_signed_in?
   end
+
+  def after_sign_in_path_for(resource)
+    corporations_path
+  end
+
+  def after_sign_out_path_for(resource)
+    corporations_path
+  end
 end
