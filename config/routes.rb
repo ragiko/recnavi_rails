@@ -1,4 +1,12 @@
 Rails.application.routes.draw do
+  get 'corporations/new'
+
+  get 'corporations/index'
+
+  get 'users/new'
+
+  resources :corporations
+
   devise_for :users
   root to: 'welcome#index'
 

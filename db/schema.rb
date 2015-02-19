@@ -11,7 +11,27 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150219153329) do
+ActiveRecord::Schema.define(version: 20150219163048) do
+
+  create_table "corporations", force: true do |t|
+    t.string   "recnavi_id"
+    t.string   "name"
+    t.string   "seminar_url"
+    t.string   "schedule_html"
+    t.datetime "diff_detect_time"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "resisters", force: true do |t|
+    t.integer  "user_id"
+    t.integer  "corporation_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "resisters", ["corporation_id"], name: "index_resisters_on_corporation_id"
+  add_index "resisters", ["user_id"], name: "index_resisters_on_user_id"
 
   create_table "users", force: true do |t|
     t.string   "email",                  default: "", null: false
