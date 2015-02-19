@@ -1,2 +1,14 @@
 <h1>Corporations#new</h1>
 <p>Find me in app/views/corporations/new.html.erb</p>
+
+<div class="page-header">
+    <h1>会社の登録</h1>
+</div>
+
+<%= form_for(@corporation, class: 'form-horizontal', role: 'form', html: { multipart: true }) do |f| %>
+    <div class="form-group">
+        <%= f.label :recnavi_id %>
+        <%= f.text_field :recnavi_id, class: 'form-control' %>
+    </div>
+    <%= f.submit '作成', class: 'btn btn-default', data: { disable_with: '作成中…' } %>
+<% end %>
