@@ -4,12 +4,16 @@ require 'pp'
 
 module Recnavi
   class Company
+    TEST_DEV_2015 = true
+
     def initialize(id)
       @id = id
-      @domain = "https://job.rikunabi.com"
-      @top_url = "https://job.rikunabi.com/2016/company/top/#{@id}/"
       @top_doc = nil
       @seminar_doc = nil
+      @domain = "https://job.rikunabi.com"
+      @top_url = TEST_DEV_2015 ? "https://job.rikunabi.com/2015/company/top/#{@id}/" : "https://job.rikunabi.com/2016/company/top/#{@id}/"
+      @pre_char = TEST_DEV_2015 ? "C" : "V"
+      @event_link_id = TEST_DEV_2015 ? "#lnk_koshatubu_setevent" : "#lnk_koshatubu_setevent_pre"
     end
 
     def top_doc
@@ -23,9 +27,10 @@ module Recnavi
     end
 
     # セミナー予約ページ内に日程が複数存在したときにurlを取得
-    # urlにドメインを付加した絶対パスを返す
+    # urlにドメインを付加した絶対パスの配列を返す
     def seminar_nest_urls
-      links = links_to_follow(seminar_doc, /\/2016\/company\/preseminar\/#{@id}\/V\d+\//)
+      return [] if seminar_doc.nil?
+      links = links_to_follow(seminar_doc, /\/2016\/company\/preseminar\/#{@id}\/#{@pre_char}\d+\//)
       # 絶対パスにする
       links = links.map { |link| @domain + link }
       links.sort! if !links.empty?
@@ -67,7 +72,7 @@ module Recnavi
     # 存在しない時 nilを返す
     def event_link
       return nil if !top_doc
-      event_nodes = top_doc.css("#lnk_koshatubu_setevent_pre") # ここのdom変わりそう
+      event_nodes = top_doc.css(@event_link_id) # ここのdom変わりそう
       link = nil
       link = @domain + event_nodes[0][:href] if !event_nodes.empty?
       link
@@ -125,16 +130,17 @@ if __FILE__ == $0
     def setup
       # タマノイ酢株式会社
       id = "r395400074"
-      @recnavi = Recnavi.new(id)
+      @recnavi = Recnavi::Company.new(id)
 
+      # カンロ
       id = "r282300039"
-      @recnavi_not_event = Recnavi.new(id)
+      @recnavi_not_event = Recnavi::Company.new(id)
       
       # テレコムサービス株式会社
       # 説明会ページに説明会が複数存在するサイト
       # http://job.rikunabi.com/2016/company/preseminars/r394130001/
       id = "r394130001"
-      @recnavi_nest = Recnavi.new(id)
+      @recnavi_nest = Recnavi::Company.new(id)
       
       # "r395400074", # タマノイ酢株式会社
       # "r282300039", # カンロ株式会社
@@ -175,6 +181,7 @@ if __FILE__ == $0
     
     def test_日程のHTMLを取得
       assert @recnavi.schedule_htmls != [], "説明会情報がネストしてない場合上手く行かない"
+      p @recnavi.schedule_htmls
       # 説明会ページ > 説明会情報があるときに上手く動作する
       assert @recnavi_nest.schedule_htmls != [], "説明会情報がネストしている場合上手く行かない"
     end
